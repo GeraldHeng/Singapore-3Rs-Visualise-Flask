@@ -1,0 +1,14 @@
+id,start_year,start_quarter,end_year,end_quarter,events,status,reviewed on,reviewed by
+1,2003,,2003,,SARs outbreak in Singapore,approved,14/01/2019,Gerald
+2,2008,Q4,2009,Q1,Economic Recession,approved,07/04/2019,Marven
+3,2012,Q2,2012,Q3,Chinese Bus Driver Strike,approved,18/09/2020,Tian Cheng
+4,2020,,2020,,Covid-19,approved,22/10/2020,Jas
+5,2013,,2014,,Foreign Worker Population Boost,approved,30/09/2019,Jerome
+6,2013,,2013,,Haze,approved,30/12/2019,Jasmin
+7,2013,Q1,2013,Q4,Haze,rejected,30/12/2019,Jasmin
+8,2009,,2009,,Economic Recession,rejected,18/01/2020,Gerald
+9,2003,Q3,2004,Q4,SARs outbreak in Singapore,pending,,
+10,2004,Q4,2007,Q2,United States: Great Recession,pending,,
+11,2020,Q1,2020,Q1,My Birthday :),pending,,
+12,2020,Q3,2020,Q4,SiT AY 2020/21 Trimester 1,approved,22/10/2020,Gerald
+13,2019,Q3,2019,Q4,GCSE O Level's 2019,pending,,

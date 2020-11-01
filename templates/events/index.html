@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Python 1002</title>
+    <meta name="description" content="The HTML5 Herald" />
+    <meta name="author" content="SitePoint" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"
+        integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+
+    <!-- Multi Select -->
+    <link defer rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <!-- events.js -->
+    <script defer src="static/events.js "></script>
+
+    <!-- Chart.Js Visualisation -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+    <!-- Validation -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+    <script>
+    </script>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Python Project</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/events">Events <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 20px;">
+        <section>
+            <h1>Events Community Chest</h1>
+            <p>Users can input events that happened in the past that may have effect on the Singapore's Economy.</p>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEventModal">Create New
+                Event</button>
+        </section>
+
+        <hr />
+
+        <section style="margin-top: 15px;">
+            <table class="table table-borderless">
+                <tr>
+                    <th>Period</th>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>Review Info</th>
+                </tr>
+                {% for row in row_data %}
+                <tr>
+                    <td>
+                        {{ row[2] + " " + row[1] + " to " + row[4] + " " + row[3]  }}
+                    </td>
+                    <td>
+                        {{ row[5] }}
+                    </td>
+                    <td>
+                        {% if row[6] == "approved" %}
+                        <span class="badge badge-success">Approved</span>
+                        {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if row[8] == "" or row[7] == "" %}
+                        <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal"
+                            data-target="#reviewEventModal" data-id="{{row[0]}}">Review</button>
+                        {% else %}
+                        {{ row[8] + " - " + row[7] }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <!-- Add Event Modal -->
+        <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addEventModalLabel">Add Event</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div id="rowId" style="display: none;"></div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="form-group col-sm-6">
+                                    <label for="startYear" class="col-form-label">Start Year:</label>
+                                    <input type="startYear" class="form-control" id="startYear">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="startQuarter" class="col-form-label">Start Quarter:</label>
+                                    <select class="form-control" id="startQuarter" name="start_quarter">
+                                        <option value="">None Selected</option>
+                                        <option value="Q1">Q1</option>
+                                        <option value="Q2">Q2</option>
+                                        <option value="Q3">Q3</option>
+                                        <option value="Q4">Q4</option>
+                                    </select> </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-sm-6">
+                                    <label for="endYear" class="col-form-label">End Year:</label>
+                                    <input type="endYear" class="form-control" id="endYear">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="endQuarter" class="col-form-label">End Quarter:</label>
+                                    <select class="form-control" id="endQuarter" name="end_quarter">
+                                        <option value="">None Selected</option>
+                                        <option value="Q1">Q1</option>
+                                        <option value="Q2">Q2</option>
+                                        <option value="Q3">Q3</option>
+                                        <option value="Q4">Q4</option>
+                                    </select> </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-sm-12">
+                                    <label for="event">Event</label>
+                                    <textarea class="form-control" id="event" rows="3"></textarea>
+                                </div>
+                                <p style="font-style: italic;">Once submitted you will not be able to make changes.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" onclick="addEvent()" class="btn btn-primary"
+                            data-dismiss="modal">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Event Modal -->
+        <div class="modal fade" id="reviewEventModal" tabindex="-1" aria-labelledby="reviewEventModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reviewEventModalLabel">Review Event</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <p>Events that are approved will be permanently displayed.
+                            </p>
+                            <label for="adminPassword" class="col-form-label">Admin Password:</label>
+                            <input type="password" class="form-control" id="adminPassword">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" onclick="reviewStatus('rejected')" class="btn btn-danger"
+                            data-dismiss="modal">Decline</button>
+                        <button type="button" onclick="reviewStatus('approved')" class="btn btn-success"
+                            data-dismiss="modal">Accept</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

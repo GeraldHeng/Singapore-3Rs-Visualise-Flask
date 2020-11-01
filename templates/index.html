@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Python 1002</title>
+    <meta name="description" content="The HTML5 Herald" />
+    <meta name="author" content="SitePoint" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"
+        integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+
+    <!-- Multi Select -->
+    <link defer rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+
+    <!-- main.js -->
+    <script defer src="static/main.js "></script>
+    <link rel="stylesheet" href="static/main.css" />
+
+    <!-- Chart.Js Visualisation -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+    <!-- Validation -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+    <script>
+    </script>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Python Project</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/events">Events</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container" style="margin-top: 20px;">
+        <div id="alert">
+            {% if error %}
+            <div class='alert alert-danger alert-dismissable' style='z-index:1;'> <button type='button' class='close'
+                    data-dismiss='alert' aria-hidden='true'>&times;</button> Error is detected:
+                {% for e in error %}
+                <p>{{e}}</p>
+                {% endfor %}
+            </div>
+            {% elif warning %}
+            <div class='alert alert-warning alert-dismissable' style='z-index:1;'> <button type='button' class='close'
+                    data-dismiss='alert' aria-hidden='true'>&times;</button> Warning is detected:
+                {{", ".join(warning)}}</div>
+            {% endif %}
+
+        </div>
+        <!-- Search Form Section -->
+        <section>
+            <h1>Data Visualisation for Singapore Recruitment, Retrenchment & Resignation</h1>
+            <p>Input filters and we display the data table, average percent/number of the 3R and comparsion of the 3R in
+                the start to end year time frame.</p>
+            <form id="searchForm" action="http://localhost:5000/" method="POST">
+                <div class="row">
+                    <div class="form-group col-sm">
+                        <label for="startYear">Start Year</label>
+                        <input type="text" class="form-control" id="startYear" name="start_year" placeholder="2000"
+                            onkeypress="return isNumberKey(event)" maxlength="4">
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="startQuarter">Start Quarter</label>
+                        <select class="form-control" id="startQuarter" name="start_quarter">
+                            <option value="none">None Selected</option>
+                            <option value="Q1">Q1</option>
+                            <option value="Q2">Q2</option>
+                            <option value="Q3">Q3</option>
+                            <option value="Q4">Q4</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="endYear">End Year</label>
+                        <input type="text" class="form-control" id="endYear" name="end_year" placeholder="2008"
+                            onkeypress="return isNumberKey(event)" maxlength="4">
+                    </div>
+                    <div class="form-group col-sm">
+                        <label for="endQuarter">End Quarter</label>
+                        <select class="form-control" id="endQuarter" name="end_quarter">
+                            <option value="none">None Selected</option>
+                            <option value="Q1">Q1</option>
+                            <option value="Q2">Q2</option>
+                            <option value="Q3">Q3</option>
+                            <option value="Q4">Q4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-sm">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="N" id="isRange" name="is_range">
+                            <label class="form-check-label" for="isRange">
+                                Select only the start and end data
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label for="industries">Industries</label>
+                    <div class="row">
+                        <select class="selectpicker col-sm" id="industries" name="industries" multiple>
+                            <option>manufacturing</option>
+                            <option>construction</option>
+                            <option>services</option>
+                            <option>others</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;" class="row">
+                    <div class="offset-sm-10">
+                        <div class="dropdown mb-2 btn-group">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {{export_data}}>
+                                Export
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="/download-dataset/{{random_filename}}" target="blank"">To
+                                    Computer</a>
+                                <a class=" dropdown-item" data-toggle="modal" data-target="#emailModal">To
+                                    Email</a>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mb-2">Search</button>
+                    </div>
+            </form>
+        </section>
+
+        <hr />
+
+        <!-- Table Chart Toggle Section -->
+        <section>
+            <div class="row">
+                <div class="btn-group btn-group-toggle offset-sm-10" data-toggle="buttons">
+                    <label class="btn btn-primary active">
+                        <input type="radio" name="options" id="tableBtn" checked> Table
+                    </label>
+                    <label class="btn btn-primary">
+                        <input type="radio" name="options" id="chartBtn"> Charts
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Table Chart Display Section -->
+        {% if year %}
+        <section style="margin-top: 15px;">
+            <!-- Table -->
+            <div class="row toggle-on" id="tableSection">
+                <table class="table">
+                    <tr>
+                        {% for col in column_names %}
+                        <th>{{col}}</th>
+                        {% endfor %}
+                    </tr>
+                    {% for row in row_data %}
+                    <tr>
+                        {% for col in row %}
+                        <td>
+                            {{ col }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <!-- Chart -->
+            <div class="toggle-off" id="chartSection">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Highest Retrenchment</h5>
+                                <h2 class="card-text">{{highest_retrenchment_info[0]}}</h2>
+                                <p class="text-muted">{{", ".join(highest_retrenchment_info[1])}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Highest Recruitment</h5>
+                                <h2 class="card-text">{{highest_recruitment_info[0]}}%</h2>
+                                <p class="text-muted">{{",".join(highest_recruitment_info[1])}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Highest Resignation</h5>
+                                <h2 class="card-text">{{highest_resignation_info[0]}}%</h2>
+                                <p class="text-muted">{{", ".join(highest_resignation_info[1])}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-sm-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Lowest Retrenchment</h5>
+                                <h2 class="card-text">{{lowest_retrenchment_info[0]}}</h2>
+                                <p class="text-muted">{{", ".join(lowest_retrenchment_info[1])}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Lowest Recruitment</h5>
+                                <h2 class="card-text">{{lowest_recruitment_info[0]}}%</h2>
+                                <p class="text-muted">{{", ".join(lowest_recruitment_info[1])}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Lowest Resignation</h5>
+                                <h2 class="card-text">{{lowest_resignation_info[0]}}%</h2>
+                                <p class="text-muted">{{", ".join(lowest_resignation_info[1])}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-sm-6">
+                        <div>
+                            <h5>Average Recruitment, Retrenchment & Resignation by Year/Quarter</h5>
+                            <canvas id="avgChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div>
+                            <h5>Average Recruitment, Retrenchment & Resignation, by Industry</h5>
+                            <canvas id="compChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                {% if ('is_range' is not in data.keys()) and (year[0] >= 2004) %}
+                <!-- GOOGLE TREND. -->
+                <div class="row justify-content-md-center">
+                    <div>
+                        <h5>Number of searches of "economic recession" in Singapore against Retrenchment</h5>
+                        <p class="text-muted">Please note that trends will only be accurately displayed for years after
+                            2004.</p>
+                        <canvas id="googleTrendChart"></canvas>
+                        <p>Some of the related topics in this period to "economic recession" are:</p>
+                        <p class="text-muted">{{related_topics}}</p>
+                    </div>
+                </div>
+                <!-- GOOGLE TREND. END HERE. -->
+                {% endif %}
+            </div>
+            <!-- Chart End -->
+        </section>
+        {% endif %}
+
+        <!-- To email modal -->
+        <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="emailModalLabel">To Email</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form action="http://localhost:5000/submit-email" method="POST">
+                            <div class="form-group">
+                                <label for="userEmail" class="col-form-label">Email:</label>
+                                <input type="email" class="form-control" id="userEmail">
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" onclick="sendEmail()" class="btn btn-primary" data-dismiss="modal">Send
+                            to
+                            Email</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+
+<script defer>
+    $(document).ready(function () {
+        getIndustriesInputData();
+        getStartYearInputData();
+        getEndYearInputData();
+        getStartQuarterInputData();
+        getEndQuarterInputData();
+        getIsRangeData();
+
+        var counts = {};
+        var linelabels = [];
+        var years = {{ year }};
+    var hasquarter = false;
+    {% if quarter != undefined %}
+    hasquarter = {{ quarter }}
+    {% endif %}
+
+
+    //generate labels for average chart
+    if (hasquarter) {
+        // to get labels for x-axis
+        // get the count for repeated years to determine quarters
+        years.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
+        // for each year repeated, create a quarter for the year
+        for (year in counts) {
+            var x = 4
+            var y = 4
+            if (counts[year] == 4)
+                x = 1;
+            else if (counts[year] == 3) {
+                x = 1;
+                y = 3;
+            }
+            else if (counts[year] == 2) {
+                x = 3
+                y = 2
+            }
+            for (x; x <= y; x++)
+                linelabels.push(year.toString() + ' - Q' + x);
+        };
+    } else {
+        for (i in years) {
+            // if data is annually
+            linelabels.push(years[i])
+        };
+    };
+
+    // end of avg chart label generation
+
+    // average chart
+    // get your target location for the chart
+    var avg = document.getElementById('avgChart').getContext('2d');
+
+    //create the chart
+    var avgChart = new Chart(avg, {
+        // The type of chart we want to create
+        type: 'line',
+        // The data for our dataset
+        data: {
+            // x-axis labels
+            labels: linelabels,
+            datasets: [{
+                // dataset for recruitment rate
+                label: 'Recruitment Rate',
+                borderColor: 'rgb(255, 99, 132)',
+                yAxisID: 'A',
+                data: [
+                    {% for rate in avgrecruitment %}
+                    "{{rate}}",
+            {% endfor %}
+                ]}, {
+        // dataset for resignation rate
+        label: 'Resignation Rate',
+            borderColor: 'rgb(51, 204, 51)',
+                yAxisID: 'A',
+                    data: [
+                        {% for rate in avgresignation %}
+    "{{rate}}",
+        {% endfor %}
+                ]}, {
+        // dataset for retrenchment rate
+        label: 'Retrenchment',
+            borderColor: 'rgb(138, 43, 226)',
+                borderWidth: 2,
+                    yAxisID: 'B',
+                        data: [
+                            {% for data in avgretrenchment %}
+    "{{data}}",
+        {% endfor %}
+            ]} // add more datasets to for different plots in the graph
+        ]},
+    options: {
+        scales: {
+            yAxes: [{
+                id: 'A',
+                type: 'linear',
+                position: 'left'
+            }, {
+                id: 'B',
+                type: 'linear',
+                position: 'right'
+            }]
+        }
+    }
+    });
+    // average chart ends here
+
+    // comparison chart starts here
+    var avg = document.getElementById('compChart').getContext('2d');
+    //create the bar graph
+    var avgChart = new Chart(avg, {
+        // The type of chart we want to create
+        type: 'bar',
+        // The data for our dataset
+        data: {
+            // x-axis labels
+            labels: [
+                {% for ind in compindustry %}
+                    "{{ind}}",
+                {% endfor %}
+                ],
+    datasets: [{
+        // dataset for recruitment rate
+        label: 'Recruitment Rate',
+        backgroundColor: 'rgb(255, 99, 132, 0.1)',
+        borderColor: 'rgb(255, 99, 132)',
+        borderWidth: 2,
+        yAxisID: 'A',
+        data: [
+            {% for rate in comprecruitment %}
+                    "{{rate}}",
+    {% endfor %}
+    ]}, {
+        // dataset for resignation rate
+        label: 'Resignation Rate',
+            backgroundColor: 'rgb(51, 204, 51, 0.1)',
+                borderColor: 'rgb(51, 204, 51)',
+                    borderWidth: 2,
+                        yAxisID: 'A',
+                            data: [
+                                {% for rate in compresignation %}
+    "{{rate}}",
+        {% endfor %}
+                ]}, {
+        // dataset for retrenchment rate
+        label: 'Retrenchment',
+            backgroundColor: 'rgb(138, 43, 226, 0.1)',
+                borderColor: 'rgb(138, 43, 226)',
+                    borderWidth: 2,
+                        yAxisID: 'B',
+                            data: [
+                                {% for data in compretrenchment %}
+    "{{data}}",
+        {% endfor %}
+            ]} // add more datasets to for different plots in the graph
+        ]},
+    options: {
+        scales: {
+            yAxes: [{
+                id: 'A',
+                type: 'linear',
+                position: 'left',
+                ticks: {
+                    min: 0
+                }
+            }, {
+                id: 'B',
+                type: 'linear',
+                position: 'right',
+                ticks: {
+                    suggestedMin: 50,
+                    stepSize: 100
+                }
+            }]
+        }
+    }
+    });
+    // comparison chart ends here
+
+
+    // google trend chart start here
+    var googleTrendChart = document.getElementById('googleTrendChart').getContext('2d');
+
+    var googleTrendChart = new Chart(googleTrendChart, {
+        // The type of chart we want to create
+        type: 'line',
+        // The data for our dataset
+        data: {
+            // x-axis labels
+            labels: linelabels,
+            datasets: [{
+                // dataset for retrenchment rate
+                label: 'Retrenchment',
+                borderColor: 'rgb(138, 43, 226)',
+                borderWidth: 2,
+                yAxisID: 'A',
+                data: [
+                    {% for data in avgretrenchment %}
+                    "{{data}}",
+            {% endfor %}
+            ]},
+    {
+        // dataset for retrenchment rate
+        label: '"economic recession" searches',
+            borderColor: 'rgb(51, 204, 51)',
+                borderWidth: 2,
+                    yAxisID: 'B',
+                        data: [
+                            {% for data in intrst_ovr_time %}
+    "{{data}}",
+        {% endfor %}
+            ]} // add more datasets to for different plots in the graph
+        ]},
+    options: {
+        scales: {
+            yAxes: [{
+                id: 'A',
+                type: 'linear',
+                position: 'left'
+            }, {
+                id: 'B',
+                type: 'linear',
+                position: 'right'
+            }]
+        }
+    }
+    });
+    // google trend chart end here
+});
+
+    function getIndustriesInputData() {
+        // Get the values for industries input.
+        industries_data = "{{data['industries']}}";
+        industries_data = industries_data.replaceAll("&#39;", "");
+        industries_data = industries_data.replaceAll(" ", "");
+        industries_data = industries_data.replaceAll("[", "");
+        industries_data = industries_data.replaceAll("]", "");
+        industries_data = industries_data.split(",");
+        $('.selectpicker').val(industries_data);
+    }
+
+    function getStartYearInputData() {
+        // Get the values for start year input.
+        document.getElementById("startYear").value = "{{data['start_year'][0]}}";
+    }
+
+    function getEndYearInputData() {
+        // Get the values for end year input.
+        document.getElementById("endYear").value = "{{data['end_year'][0]}}";
+    }
+
+    function getStartQuarterInputData() {
+        // Get the values for start quarter input.
+        var start_quarter_options = document.getElementById("startQuarter").options;
+        for (i = 0; i < start_quarter_options.length; ++i) {
+            if (start_quarter_options[i].value == "{{data['start_quarter'][0]}}") {
+                start_quarter_options[i].selected = true;
+            }
+        }
+    }
+
+    function getEndQuarterInputData() {
+        // Get the values for end quarter input.
+        var end_quarter_options = document.getElementById("endQuarter").options;
+        for (i = 0; i < end_quarter_options.length; ++i) {
+            if (end_quarter_options[i].value == "{{data['end_quarter'][0] }}") {
+                end_quarter_options[i].selected = true;
+            }
+        }
+    }
+    function getIsRangeData() {
+        // Get the values for end year input.
+        if ("{{'is_range' is in data.keys()}}" == "True") {
+            document.getElementById("isRange").checked = true;
+        }
+        else {
+            document.getElementById("isRange").checked = false;
+        }
+    }
+</script>
+
+</html>
